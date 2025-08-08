@@ -199,42 +199,22 @@
             {
                 question: "What is the capital of France?",
                 options: ["London", "Berlin", "Paris", "Madrid"],
-                correct: 2
+                correct: 0
             },
             {
                 question: "Which planet is known as the Red Planet?",
                 options: ["Venus", "Mars", "Jupiter", "Saturn"],
-                correct: 1
+                correct: 0
             },
             {
                 question: "What is 2 + 2?",
                 options: ["3", "4", "5", "6"],
-                correct: 1
+                correct: 0
             },
             {
                 question: "Who painted the Mona Lisa?",
                 options: ["Van Gogh", "Picasso", "Leonardo da Vinci", "Michelangelo"],
-                correct: 2
-            },
-            {
-                question: "What is the largest ocean on Earth?",
-                options: ["Atlantic", "Indian", "Arctic", "Pacific"],
-                correct: 3
-            },
-            {
-                question: "Which programming language is known for web development?",
-                options: ["Python", "JavaScript", "C++", "Java"],
-                correct: 1
-            },
-            {
-                question: "What year did World War II end?",
-                options: ["1944", "1945", "1946", "1947"],
-                correct: 1
-            },
-            {
-                question: "Which element has the chemical symbol 'O'?",
-                options: ["Gold", "Silver", "Oxygen", "Iron"],
-                correct: 2
+                correct: 0
             }
         ];
 
@@ -648,7 +628,7 @@
         // Draw end point (red square)
         const endGridX = this.cols - 2;
         const endGridY = this.rows - 2;
-        this.ctx.fillStyle = '#ff0000';
+        this.ctx.fillStyle = '#fff';
         this.ctx.fillRect(
             endGridX * this.cellSize + 2, 
             endGridY * this.cellSize + 2, 
@@ -657,10 +637,10 @@
         );
         
         // Draw "END" text
-        this.ctx.fillStyle = '#fff';
+        this.ctx.fillStyle = '#ff0000';
         this.ctx.font = '10px Arial';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('END', (endGridX + 0.5) * this.cellSize, (endGridY + 0.5) * this.cellSize + 3);
+        this.ctx.fillText('終點！', (endGridX + 0.5) * this.cellSize, (endGridY + 0.5) * this.cellSize + 3);
 
         // Draw question points (only unanswered ones)
         this.ctx.fillStyle = '#ff4444';
