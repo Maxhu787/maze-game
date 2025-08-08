@@ -296,6 +296,15 @@
                 // Adjust canvas size to fit perfectly
                 this.canvas.width = this.cols * this.cellSize;
                 this.canvas.height = this.rows * this.cellSize;
+
+                // Color variables - easy to customize
+                this.colors = {
+                    mazeWalls: '#fff',
+                    player: '#4444ff',
+                    questionPoints: '#ff4444',
+                    startPoint: '#00ff00',
+                    endPoint: '#ff0000'
+                };
                 
                 // Player positions - now using pixel coordinates for smooth movement
                 this.player = { 
@@ -658,7 +667,7 @@
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // Draw maze
-                this.ctx.fillStyle = '#333';
+                this.ctx.fillStyle = this.colors.mazeWalls;
                 for (let y = 0; y < this.rows; y++) {
                     for (let x = 0; x < this.cols; x++) {
                         if (this.maze[y][x] === 1) {
@@ -673,7 +682,7 @@
                 }
 
                 // Draw start point (green square)
-                this.ctx.fillStyle = '#00ff00';
+                this.ctx.fillStyle = this.colors.startPoint;
                 this.ctx.fillRect(
                     1 * this.cellSize + 2, 
                     1 * this.cellSize + 2, 
@@ -690,7 +699,7 @@
                 // Draw end point (red square)
                 const endGridX = this.cols - 2;
                 const endGridY = this.rows - 2;
-                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillStyle = this.colors.endPoint;
                 this.ctx.fillRect(
                     endGridX * this.cellSize + 2, 
                     endGridY * this.cellSize + 2, 
@@ -705,7 +714,7 @@
                 this.ctx.fillText('END', (endGridX + 0.5) * this.cellSize, (endGridY + 0.5) * this.cellSize + 3);
 
                 // Draw question points (only unanswered ones)
-                this.ctx.fillStyle = '#ff4444';
+                this.ctx.fillStyle = this.colors.questionPoints;
                 this.questionPoints.forEach((point, index) => {
                     if (!this.answeredQuestions.has(index)) {
                         this.ctx.beginPath();
@@ -721,7 +730,7 @@
                 });
 
                 // Draw player (blue dot) using smooth pixel coordinates
-                this.ctx.fillStyle = '#4444ff';
+                this.ctx.fillStyle = this.colors.player;
                 this.ctx.beginPath();
                 this.ctx.arc(
                     this.player.x,
