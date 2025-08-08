@@ -7,25 +7,44 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 20px;
+            margin: 0;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 2em;
+            background-color: #fff;
+            border-bottom: 2px solid #333;
+        }
+
+        #gameLayout {
+            display: flex;
+            height: calc(100vh - 60px); /* Subtract header height */
+        }
+
+        #leftPanel {
+            width: 250px;
+            background-color: #fff;
+            border-right: 2px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         #gameContainer {
-            position: relative;
+            flex: 1;
             background-color: white;
-            border: 2px solid #333;
-            border-radius: 8px;
-            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #mazeCanvas {
@@ -33,20 +52,27 @@
             border: 1px solid #ccc;
         }
 
-        #controls {
-            margin-top: 20px;
-            text-align: center;
+        #rightPanel {
+            width: 200px;
+            background-color: #fff;
+            border-left: 2px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         #restartBtn {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 25px;
+            font-size: 18px;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
+            width: 100%;
         }
 
         #restartBtn:hover {
@@ -54,8 +80,18 @@
         }
 
         #instructions {
-            margin-top: 15px;
             color: #666;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        #score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
             text-align: center;
         }
 
@@ -153,31 +189,29 @@
         #continueBtn:hover {
             background-color: #0056b3;
         }
-
-        #score {
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
     </style>
 </head>
 <body>
-    <h1>Maze Adventure Game</h1>
+    <h1>走迷宮回答問題</h1>
     
-    <div id="gameContainer">
-        <canvas id="mazeCanvas" width="600" height="600"></canvas>
-    </div>
-    
-    <div id="score">Questions Answered: 0</div>
-    
-    <div id="controls">
-        <button id="restartBtn">Restart Game</button>
-    </div>
-    
-    <div id="instructions">
-        Use arrow keys to move the blue dot from START (green) to END (red).<br>
-        Hold keys longer to move faster! Collect the red question points along the way!
+    <div id="gameLayout">
+        <div id="leftPanel">
+            <div id="score">Questions Answered: 0</div>
+            <div id="instructions">
+                <strong>How to Play:</strong><br><br>
+                Use arrow keys to move the blue dot from START (green) to END (red).<br><br>
+                Hold keys longer to move faster!<br><br>
+                Collect the red question points to answer trivia questions along the way!
+            </div>
+        </div>
+        
+        <div id="gameContainer">
+            <canvas id="mazeCanvas"></canvas>
+        </div>
+        
+        <div id="rightPanel">
+            <button id="restartBtn">Restart Game</button>
+        </div>
     </div>
 
      Question Modal 
@@ -199,478 +233,505 @@
             {
                 question: "What is the capital of France?",
                 options: ["London", "Berlin", "Paris", "Madrid"],
-                correct: 0
+                correct: 2
             },
             {
                 question: "Which planet is known as the Red Planet?",
                 options: ["Venus", "Mars", "Jupiter", "Saturn"],
-                correct: 0
+                correct: 1
             },
             {
                 question: "What is 2 + 2?",
                 options: ["3", "4", "5", "6"],
-                correct: 0
+                correct: 1
             },
             {
                 question: "Who painted the Mona Lisa?",
                 options: ["Van Gogh", "Picasso", "Leonardo da Vinci", "Michelangelo"],
-                correct: 0
+                correct: 2
+            },
+            {
+                question: "What is the largest ocean on Earth?",
+                options: ["Atlantic", "Indian", "Arctic", "Pacific"],
+                correct: 3
+            },
+            {
+                question: "Which programming language is known for web development?",
+                options: ["Python", "JavaScript", "C++", "Java"],
+                correct: 1
+            },
+            {
+                question: "What year did World War II end?",
+                options: ["1944", "1945", "1946", "1947"],
+                correct: 1
+            },
+            {
+                question: "Which element has the chemical symbol 'O'?",
+                options: ["Gold", "Silver", "Oxygen", "Iron"],
+                correct: 2
             }
         ];
 
         class MazeGame {
-    constructor() {
-        this.canvas = document.getElementById('mazeCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        
-        // Calculate optimal cell size to fill canvas evenly
-        this.cols = 29; // Odd number for proper maze generation
-        this.rows = 29; // Odd number for proper maze generation
-        this.cellSize = Math.min(
-            Math.floor(this.canvas.width / this.cols),
-            Math.floor(this.canvas.height / this.rows)
-        );
-        
-        // Adjust canvas size to fit perfectly
-        this.canvas.width = this.cols * this.cellSize;
-        this.canvas.height = this.rows * this.cellSize;
-        
-        // Player positions - now using pixel coordinates for smooth movement
-        this.player = { 
-            x: 1.5 * this.cellSize, 
-            y: 1.5 * this.cellSize 
-        };
-        this.playerRadius = this.cellSize / 3;
-        this.moveSpeed = 4; // Pixels per frame - adjust for faster/slower movement
-        
-        this.questionPoints = [];
-        this.answeredQuestions = new Set();
-        this.score = 0;
-        
-        this.maze = [];
-        this.currentQuestion = null;
-        
-        this.keysPressed = {};
-
-        this.initializeGame();
-        this.setupEventListeners();
-    }
-
-    initializeGame() {
-        this.generateMaze();
-        this.placeQuestionPoints();
-        this.player = { 
-            x: 1.5 * this.cellSize, 
-            y: 1.5 * this.cellSize 
-        };
-        this.endPoint = { 
-            x: (this.cols - 1.5) * this.cellSize, 
-            y: (this.rows - 1.5) * this.cellSize 
-        };
-        this.answeredQuestions.clear();
-        this.score = 0;
-        this.gameWon = false;
-        this.updateScore();
-        this.draw();
-    }
-
-    generateMaze() {
-        // Initialize maze with walls
-        this.maze = Array(this.rows).fill().map(() => Array(this.cols).fill(1));
-        
-        // Recursive backtracking maze generation
-        const stack = [];
-        const start = { x: 1, y: 1 };
-        this.maze[start.y][start.x] = 0;
-        stack.push(start);
-
-        while (stack.length > 0) {
-            const current = stack[stack.length - 1];
-            const neighbors = this.getUnvisitedNeighbors(current);
-
-            if (neighbors.length > 0) {
-                const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+            constructor() {
+                this.canvas = document.getElementById('mazeCanvas');
+                this.ctx = this.canvas.getContext('2d');
                 
-                // Remove wall between current and next
-                const wallX = current.x + (next.x - current.x) / 2;
-                const wallY = current.y + (next.y - current.y) / 2;
-                this.maze[wallY][wallX] = 0;
-                this.maze[next.y][next.x] = 0;
+                // Calculate canvas size to fill available height
+                const availableHeight = window.innerHeight - 60; // Subtract header height
+                const availableWidth = window.innerWidth - 450; // Subtract left and right panels
                 
-                stack.push(next);
-            } else {
-                stack.pop();
-            }
-        }
-        
-        // Ensure start and end points are always accessible
-        this.maze[1][1] = 0; // Start point
-        this.maze[this.rows - 2][this.cols - 2] = 0; // End point
-        
-        // Create a guaranteed path to end if needed
-        this.ensurePathToEnd();
-    }
-
-    ensurePathToEnd() {
-        // Simple path creation from start area to end area
-        let x = 1, y = 1;
-        const endX = this.cols - 2;
-        const endY = this.rows - 2;
-        
-        // Create horizontal path
-        while (x < endX) {
-            this.maze[y][x] = 0;
-            x += 2;
-            if (x < this.cols) this.maze[y][x] = 0;
-            x++;
-        }
-        
-        // Create vertical path
-        while (y < endY) {
-            this.maze[y][x - 1] = 0;
-            y += 2;
-            if (y < this.rows) this.maze[y][x - 1] = 0;
-            y++;
-        }
-        
-        // Ensure end point connection
-        this.maze[endY][endX] = 0;
-        if (endX > 1) this.maze[endY][endX - 1] = 0;
-        if (endY > 1) this.maze[endY - 1][endX] = 0;
-    }
-
-    getUnvisitedNeighbors(cell) {
-        const neighbors = [];
-        const directions = [
-            { x: 0, y: -2 }, // Up
-            { x: 2, y: 0 },  // Right
-            { x: 0, y: 2 },  // Down
-            { x: -2, y: 0 }  // Left
-        ];
-
-        for (const dir of directions) {
-            const newX = cell.x + dir.x;
-            const newY = cell.y + dir.y;
-
-            if (newX > 0 && newX < this.cols - 1 && 
-                newY > 0 && newY < this.rows - 1 && 
-                this.maze[newY][newX] === 1) {
-                neighbors.push({ x: newX, y: newY });
-            }
-        }
-
-        return neighbors;
-    }
-
-    placeQuestionPoints() {
-        this.questionPoints = [];
-        const numQuestions = Math.min(5, questions.length);
-        
-        for (let i = 0; i < numQuestions; i++) {
-            let x, y;
-            do {
-                x = Math.floor(Math.random() * (this.cols - 2)) + 1;
-                y = Math.floor(Math.random() * (this.rows - 2)) + 1;
-            } while (this.maze[y][x] === 1 || 
-                     (x === 1 && y === 1) || // Start point
-                     (x === this.cols - 2 && y === this.rows - 2) || // End point
-                     this.questionPoints.some(p => p.x === x && p.y === y));
-            
-            this.questionPoints.push({ 
-                x: (x + 0.5) * this.cellSize, 
-                y: (y + 0.5) * this.cellSize, 
-                questionIndex: Math.floor(Math.random() * questions.length)
-            });
-        }
-    }
-
-    // Check if a circular player can move to a position without hitting walls
-    canMoveTo(x, y) {
-        const radius = this.playerRadius;
-        
-        // Check the four corners of the player's bounding box
-        const corners = [
-            { x: x - radius, y: y - radius },
-            { x: x + radius, y: y - radius },
-            { x: x - radius, y: y + radius },
-            { x: x + radius, y: y + radius }
-        ];
-        
-        for (const corner of corners) {
-            const gridX = Math.floor(corner.x / this.cellSize);
-            const gridY = Math.floor(corner.y / this.cellSize);
-            
-            if (gridX < 0 || gridX >= this.cols || gridY < 0 || gridY >= this.rows) {
-                return false;
-            }
-            
-            if (this.maze[gridY][gridX] === 1) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-    setupEventListeners() {
-        // Track which keys are currently pressed
-        this.keysPressed = {};
-        
-        document.addEventListener('keydown', (e) => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                e.preventDefault();
-                this.keysPressed[e.key] = true;
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                e.preventDefault();
-                this.keysPressed[e.key] = false;
-            }
-        });
-
-        // Game loop for smooth continuous movement
-        const gameLoop = () => {
-            if (document.getElementById('questionModal').style.display === 'block') {
-                requestAnimationFrame(gameLoop);
-                return; // Don't move while question is showing
-            }
-            
-            let moved = false;
-            let newX = this.player.x;
-            let newY = this.player.y;
-
-            // Handle continuous movement
-            if (this.keysPressed['ArrowUp']) {
-                newY -= this.moveSpeed;
-                moved = true;
-            }
-            if (this.keysPressed['ArrowDown']) {
-                newY += this.moveSpeed;
-                moved = true;
-            }
-            if (this.keysPressed['ArrowLeft']) {
-                newX -= this.moveSpeed;
-                moved = true;
-            }
-            if (this.keysPressed['ArrowRight']) {
-                newX += this.moveSpeed;
-                moved = true;
-            }
-
-            // Check collision and update position
-            if (moved) {
-                // Check X movement
-                if (this.canMoveTo(newX, this.player.y)) {
-                    this.player.x = newX;
-                } else {
-                    newX = this.player.x; // Reset X if collision
-                }
+                // Use the smaller dimension to keep maze square
+                const size = Math.min(availableHeight - 40, availableWidth - 40); // Leave some padding
                 
-                // Check Y movement
-                if (this.canMoveTo(this.player.x, newY)) {
-                    this.player.y = newY;
-                }
+                this.canvas.width = size;
+                this.canvas.height = size;
                 
-                this.checkQuestionPoint();
-                this.checkWinCondition();
+                // Calculate optimal cell size to fill canvas evenly
+                this.cols = 29; // Odd number for proper maze generation
+                this.rows = 29; // Odd number for proper maze generation
+                this.cellSize = Math.floor(size / this.cols);
+                
+                // Adjust canvas size to fit perfectly
+                this.canvas.width = this.cols * this.cellSize;
+                this.canvas.height = this.rows * this.cellSize;
+                
+                // Player positions - now using pixel coordinates for smooth movement
+                this.player = { 
+                    x: 1.5 * this.cellSize, 
+                    y: 1.5 * this.cellSize 
+                };
+                this.playerRadius = this.cellSize / 3;
+                this.moveSpeed = 4; // Pixels per frame - adjust for faster/slower movement
+                
+                this.questionPoints = [];
+                this.answeredQuestions = new Set();
+                this.score = 0;
+                
+                this.maze = [];
+                this.currentQuestion = null;
+                
+                this.keysPressed = {};
+
+                this.initializeGame();
+                this.setupEventListeners();
+            }
+
+            initializeGame() {
+                this.generateMaze();
+                this.placeQuestionPoints();
+                this.player = { 
+                    x: 1.5 * this.cellSize, 
+                    y: 1.5 * this.cellSize 
+                };
+                this.endPoint = { 
+                    x: (this.cols - 1.5) * this.cellSize, 
+                    y: (this.rows - 1.5) * this.cellSize 
+                };
+                this.answeredQuestions.clear();
+                this.score = 0;
+                this.gameWon = false;
+                this.updateScore();
                 this.draw();
             }
-            
-            requestAnimationFrame(gameLoop);
-        };
-        
-        requestAnimationFrame(gameLoop);
 
-        document.getElementById('restartBtn').addEventListener('click', () => {
-            this.initializeGame();
-        });
+            generateMaze() {
+                // Initialize maze with walls
+                this.maze = Array(this.rows).fill().map(() => Array(this.cols).fill(1));
+                
+                // Recursive backtracking maze generation
+                const stack = [];
+                const start = { x: 1, y: 1 };
+                this.maze[start.y][start.x] = 0;
+                stack.push(start);
 
-        // Question modal event listeners
-        const options = document.querySelectorAll('.option');
-        options.forEach(option => {
-            option.addEventListener('click', (e) => {
-                this.handleAnswer(parseInt(e.target.dataset.index));
-            });
-        });
+                while (stack.length > 0) {
+                    const current = stack[stack.length - 1];
+                    const neighbors = this.getUnvisitedNeighbors(current);
 
-        document.getElementById('continueBtn').addEventListener('click', () => {
-            this.closeQuestionModal();
-        });
-    }
-
-    checkWinCondition() {
-        const distance = Math.sqrt(
-            Math.pow(this.player.x - this.endPoint.x, 2) + 
-            Math.pow(this.player.y - this.endPoint.y, 2)
-        );
-        
-        if (distance < this.cellSize / 2 && !this.gameWon) {
-            this.gameWon = true;
-            setTimeout(() => {
-                alert(`Congratulations! You completed the maze!\nQuestions answered correctly: ${this.score}`);
-            }, 100);
-        }
-    }
-
-    checkQuestionPoint() {
-        this.questionPoints.forEach((point, index) => {
-            if (this.answeredQuestions.has(index)) return;
-            
-            const distance = Math.sqrt(
-                Math.pow(this.player.x - point.x, 2) + 
-                Math.pow(this.player.y - point.y, 2)
-            );
-            
-            if (distance < this.cellSize / 2) {
-                this.showQuestion(point, index);
+                    if (neighbors.length > 0) {
+                        const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                        
+                        // Remove wall between current and next
+                        const wallX = current.x + (next.x - current.x) / 2;
+                        const wallY = current.y + (next.y - current.y) / 2;
+                        this.maze[wallY][wallX] = 0;
+                        this.maze[next.y][next.x] = 0;
+                        
+                        stack.push(next);
+                    } else {
+                        stack.pop();
+                    }
+                }
+                
+                // Ensure start and end points are always accessible
+                this.maze[1][1] = 0; // Start point
+                this.maze[this.rows - 2][this.cols - 2] = 0; // End point
+                
+                // Create a guaranteed path to end if needed
+                this.ensurePathToEnd();
             }
-        });
-    }
 
-    showQuestion(questionPoint, pointIndex) {
-        this.currentQuestionIndex = pointIndex;
-        const question = questions[questionPoint.questionIndex];
-        
-        document.getElementById('questionText').textContent = question.question;
-        
-        const options = document.querySelectorAll('.option');
-        options.forEach((option, index) => {
-            option.textContent = question.options[index];
-            option.className = 'option';
-            option.disabled = false;
-        });
-
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('continueBtn').style.display = 'none';
-        document.getElementById('questionModal').style.display = 'block';
-    }
-
-    handleAnswer(selectedIndex) {
-        const questionPoint = this.questionPoints[this.currentQuestionIndex];
-        const question = questions[questionPoint.questionIndex];
-        const options = document.querySelectorAll('.option');
-        const feedback = document.getElementById('feedback');
-        
-        // Disable all options
-        options.forEach(option => option.disabled = true);
-        
-        // Show correct/incorrect styling
-        options.forEach((option, index) => {
-            if (index === question.correct) {
-                option.classList.add('correct');
-            } else if (index === selectedIndex && index !== question.correct) {
-                option.classList.add('incorrect');
+            ensurePathToEnd() {
+                // Simple path creation from start area to end area
+                let x = 1, y = 1;
+                const endX = this.cols - 2;
+                const endY = this.rows - 2;
+                
+                // Create horizontal path
+                while (x < endX) {
+                    this.maze[y][x] = 0;
+                    x += 2;
+                    if (x < this.cols) this.maze[y][x] = 0;
+                    x++;
+                }
+                
+                // Create vertical path
+                while (y < endY) {
+                    this.maze[y][x - 1] = 0;
+                    y += 2;
+                    if (y < this.rows) this.maze[y][x - 1] = 0;
+                    y++;
+                }
+                
+                // Ensure end point connection
+                this.maze[endY][endX] = 0;
+                if (endX > 1) this.maze[endY][endX - 1] = 0;
+                if (endY > 1) this.maze[endY - 1][endX] = 0;
             }
-        });
 
-        // Show feedback
-        if (selectedIndex === question.correct) {
-            feedback.textContent = 'Correct! Well done!';
-            feedback.className = 'correct';
-            this.score++;
-        } else {
-            feedback.textContent = `Incorrect. The correct answer was: ${question.options[question.correct]}`;
-            feedback.className = 'incorrect';
-        }
+            getUnvisitedNeighbors(cell) {
+                const neighbors = [];
+                const directions = [
+                    { x: 0, y: -2 }, // Up
+                    { x: 2, y: 0 },  // Right
+                    { x: 0, y: 2 },  // Down
+                    { x: -2, y: 0 }  // Left
+                ];
 
-        feedback.style.display = 'block';
-        document.getElementById('continueBtn').style.display = 'block';
-        
-        // Mark question as answered
-        this.answeredQuestions.add(this.currentQuestionIndex);
-        this.updateScore();
-    }
+                for (const dir of directions) {
+                    const newX = cell.x + dir.x;
+                    const newY = cell.y + dir.y;
 
-    closeQuestionModal() {
-        document.getElementById('questionModal').style.display = 'none';
-        this.draw(); // Redraw to remove the question point
-    }
+                    if (newX > 0 && newX < this.cols - 1 && 
+                        newY > 0 && newY < this.rows - 1 && 
+                        this.maze[newY][newX] === 1) {
+                        neighbors.push({ x: newX, y: newY });
+                    }
+                }
 
-    updateScore() {
-        document.getElementById('score').textContent = `Questions Answered: ${this.score}`;
-    }
+                return neighbors;
+            }
 
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Draw maze
-        this.ctx.fillStyle = '#333';
-        for (let y = 0; y < this.rows; y++) {
-            for (let x = 0; x < this.cols; x++) {
-                if (this.maze[y][x] === 1) {
-                    this.ctx.fillRect(
-                        x * this.cellSize, 
-                        y * this.cellSize, 
-                        this.cellSize, 
-                        this.cellSize
-                    );
+            placeQuestionPoints() {
+                this.questionPoints = [];
+                const numQuestions = Math.min(5, questions.length);
+                
+                for (let i = 0; i < numQuestions; i++) {
+                    let x, y;
+                    do {
+                        x = Math.floor(Math.random() * (this.cols - 2)) + 1;
+                        y = Math.floor(Math.random() * (this.rows - 2)) + 1;
+                    } while (this.maze[y][x] === 1 || 
+                             (x === 1 && y === 1) || // Start point
+                             (x === this.cols - 2 && y === this.rows - 2) || // End point
+                             this.questionPoints.some(p => p.x === x && p.y === y));
+                    
+                    this.questionPoints.push({ 
+                        x: (x + 0.5) * this.cellSize, 
+                        y: (y + 0.5) * this.cellSize, 
+                        questionIndex: Math.floor(Math.random() * questions.length)
+                    });
                 }
             }
-        }
 
-        // Draw start point (green square)
-        this.ctx.fillStyle = '#00ff00';
-        this.ctx.fillRect(
-            1 * this.cellSize + 2, 
-            1 * this.cellSize + 2, 
-            this.cellSize - 4, 
-            this.cellSize - 4
-        );
-        
-        // Draw "START" text
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = '10px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('START', 1.5 * this.cellSize, 1.5 * this.cellSize + 3);
+            // Check if a circular player can move to a position without hitting walls
+            canMoveTo(x, y) {
+                const radius = this.playerRadius;
+                
+                // Check the four corners of the player's bounding box
+                const corners = [
+                    { x: x - radius, y: y - radius },
+                    { x: x + radius, y: y - radius },
+                    { x: x - radius, y: y + radius },
+                    { x: x + radius, y: y + radius }
+                ];
+                
+                for (const corner of corners) {
+                    const gridX = Math.floor(corner.x / this.cellSize);
+                    const gridY = Math.floor(corner.y / this.cellSize);
+                    
+                    if (gridX < 0 || gridX >= this.cols || gridY < 0 || gridY >= this.rows) {
+                        return false;
+                    }
+                    
+                    if (this.maze[gridY][gridX] === 1) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
 
-        // Draw end point (red square)
-        const endGridX = this.cols - 2;
-        const endGridY = this.rows - 2;
-        this.ctx.fillStyle = '#fff';
-        this.ctx.fillRect(
-            endGridX * this.cellSize + 2, 
-            endGridY * this.cellSize + 2, 
-            this.cellSize - 4, 
-            this.cellSize - 4
-        );
-        
-        // Draw "END" text
-        this.ctx.fillStyle = '#ff0000';
-        this.ctx.font = '10px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('終點！', (endGridX + 0.5) * this.cellSize, (endGridY + 0.5) * this.cellSize + 3);
+            setupEventListeners() {
+                // Track which keys are currently pressed
+                this.keysPressed = {};
+                
+                document.addEventListener('keydown', (e) => {
+                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                        e.preventDefault();
+                        this.keysPressed[e.key] = true;
+                    }
+                });
 
-        // Draw question points (only unanswered ones)
-        this.ctx.fillStyle = '#ff4444';
-        this.questionPoints.forEach((point, index) => {
-            if (!this.answeredQuestions.has(index)) {
+                document.addEventListener('keyup', (e) => {
+                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                        e.preventDefault();
+                        this.keysPressed[e.key] = false;
+                    }
+                });
+
+                // Game loop for smooth continuous movement
+                const gameLoop = () => {
+                    if (document.getElementById('questionModal').style.display === 'block') {
+                        requestAnimationFrame(gameLoop);
+                        return; // Don't move while question is showing
+                    }
+                    
+                    let moved = false;
+                    let newX = this.player.x;
+                    let newY = this.player.y;
+
+                    // Handle continuous movement
+                    if (this.keysPressed['ArrowUp']) {
+                        newY -= this.moveSpeed;
+                        moved = true;
+                    }
+                    if (this.keysPressed['ArrowDown']) {
+                        newY += this.moveSpeed;
+                        moved = true;
+                    }
+                    if (this.keysPressed['ArrowLeft']) {
+                        newX -= this.moveSpeed;
+                        moved = true;
+                    }
+                    if (this.keysPressed['ArrowRight']) {
+                        newX += this.moveSpeed;
+                        moved = true;
+                    }
+
+                    // Check collision and update position
+                    if (moved) {
+                        // Check X movement
+                        if (this.canMoveTo(newX, this.player.y)) {
+                            this.player.x = newX;
+                        } else {
+                            newX = this.player.x; // Reset X if collision
+                        }
+                        
+                        // Check Y movement
+                        if (this.canMoveTo(this.player.x, newY)) {
+                            this.player.y = newY;
+                        }
+                        
+                        this.checkQuestionPoint();
+                        this.checkWinCondition();
+                        this.draw();
+                    }
+                    
+                    requestAnimationFrame(gameLoop);
+                };
+                
+                requestAnimationFrame(gameLoop);
+
+                document.getElementById('restartBtn').addEventListener('click', () => {
+                    this.initializeGame();
+                });
+
+                // Question modal event listeners
+                const options = document.querySelectorAll('.option');
+                options.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        this.handleAnswer(parseInt(e.target.dataset.index));
+                    });
+                });
+
+                document.getElementById('continueBtn').addEventListener('click', () => {
+                    this.closeQuestionModal();
+                });
+            }
+
+            checkWinCondition() {
+                const distance = Math.sqrt(
+                    Math.pow(this.player.x - this.endPoint.x, 2) + 
+                    Math.pow(this.player.y - this.endPoint.y, 2)
+                );
+                
+                if (distance < this.cellSize / 2 && !this.gameWon) {
+                    this.gameWon = true;
+                    setTimeout(() => {
+                        alert(`Congratulations! You completed the maze!\nQuestions answered correctly: ${this.score}`);
+                    }, 100);
+                }
+            }
+
+            checkQuestionPoint() {
+                this.questionPoints.forEach((point, index) => {
+                    if (this.answeredQuestions.has(index)) return;
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(this.player.x - point.x, 2) + 
+                        Math.pow(this.player.y - point.y, 2)
+                    );
+                    
+                    if (distance < this.cellSize / 2) {
+                        this.showQuestion(point, index);
+                    }
+                });
+            }
+
+            showQuestion(questionPoint, pointIndex) {
+                this.currentQuestionIndex = pointIndex;
+                const question = questions[questionPoint.questionIndex];
+                
+                document.getElementById('questionText').textContent = question.question;
+                
+                const options = document.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.textContent = question.options[index];
+                    option.className = 'option';
+                    option.disabled = false;
+                });
+
+                document.getElementById('feedback').style.display = 'none';
+                document.getElementById('continueBtn').style.display = 'none';
+                document.getElementById('questionModal').style.display = 'block';
+            }
+
+            handleAnswer(selectedIndex) {
+                const questionPoint = this.questionPoints[this.currentQuestionIndex];
+                const question = questions[questionPoint.questionIndex];
+                const options = document.querySelectorAll('.option');
+                const feedback = document.getElementById('feedback');
+                
+                // Disable all options
+                options.forEach(option => option.disabled = true);
+                
+                // Show correct/incorrect styling
+                options.forEach((option, index) => {
+                    if (index === question.correct) {
+                        option.classList.add('correct');
+                    } else if (index === selectedIndex && index !== question.correct) {
+                        option.classList.add('incorrect');
+                    }
+                });
+
+                // Show feedback
+                if (selectedIndex === question.correct) {
+                    feedback.textContent = 'Correct! Well done!';
+                    feedback.className = 'correct';
+                    this.score++;
+                } else {
+                    feedback.textContent = `Incorrect. The correct answer was: ${question.options[question.correct]}`;
+                    feedback.className = 'incorrect';
+                }
+
+                feedback.style.display = 'block';
+                document.getElementById('continueBtn').style.display = 'block';
+                
+                // Mark question as answered
+                this.answeredQuestions.add(this.currentQuestionIndex);
+                this.updateScore();
+            }
+
+            closeQuestionModal() {
+                document.getElementById('questionModal').style.display = 'none';
+                this.draw(); // Redraw to remove the question point
+            }
+
+            updateScore() {
+                document.getElementById('score').textContent = `Questions Answered: ${this.score}`;
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw maze
+                this.ctx.fillStyle = '#333';
+                for (let y = 0; y < this.rows; y++) {
+                    for (let x = 0; x < this.cols; x++) {
+                        if (this.maze[y][x] === 1) {
+                            this.ctx.fillRect(
+                                x * this.cellSize, 
+                                y * this.cellSize, 
+                                this.cellSize, 
+                                this.cellSize
+                            );
+                        }
+                    }
+                }
+
+                // Draw start point (green square)
+                this.ctx.fillStyle = '#00ff00';
+                this.ctx.fillRect(
+                    1 * this.cellSize + 2, 
+                    1 * this.cellSize + 2, 
+                    this.cellSize - 4, 
+                    this.cellSize - 4
+                );
+                
+                // Draw "START" text
+                this.ctx.fillStyle = '#000';
+                this.ctx.font = '10px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('START', 1.5 * this.cellSize, 1.5 * this.cellSize + 3);
+
+                // Draw end point (red square)
+                const endGridX = this.cols - 2;
+                const endGridY = this.rows - 2;
+                this.ctx.fillStyle = '#ff0000';
+                this.ctx.fillRect(
+                    endGridX * this.cellSize + 2, 
+                    endGridY * this.cellSize + 2, 
+                    this.cellSize - 4, 
+                    this.cellSize - 4
+                );
+                
+                // Draw "END" text
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '10px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('END', (endGridX + 0.5) * this.cellSize, (endGridY + 0.5) * this.cellSize + 3);
+
+                // Draw question points (only unanswered ones)
+                this.ctx.fillStyle = '#ff4444';
+                this.questionPoints.forEach((point, index) => {
+                    if (!this.answeredQuestions.has(index)) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            point.x,
+                            point.y,
+                            this.cellSize / 3,
+                            0,
+                            2 * Math.PI
+                        );
+                        this.ctx.fill();
+                    }
+                });
+
+                // Draw player (blue dot) using smooth pixel coordinates
+                this.ctx.fillStyle = '#4444ff';
                 this.ctx.beginPath();
                 this.ctx.arc(
-                    point.x,
-                    point.y,
-                    this.cellSize / 3,
+                    this.player.x,
+                    this.player.y,
+                    this.playerRadius,
                     0,
                     2 * Math.PI
                 );
                 this.ctx.fill();
             }
-        });
-
-        // Draw player (blue dot) using smooth pixel coordinates
-        this.ctx.fillStyle = '#4444ff';
-        this.ctx.beginPath();
-        this.ctx.arc(
-            this.player.x,
-            this.player.y,
-            this.playerRadius,
-            0,
-            2 * Math.PI
-        );
-        this.ctx.fill();
-    }
-}
+        }
 
         // Start the game when page loads
         window.addEventListener('load', () => {
