@@ -5,22 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maze Game</title>
     <style>
+        :root {
+            --main-bg: #010E19;
+            --secondary-bg: #121B26;
+            --secondary-bg-hover: #1D2A38;
+            --main-text: #fff;
+            --secondary-text: #AAAAAA;
+            --thirdonary-text: #666;
+            --primary: #3A80F6;
+            --secondary: #92B9FC;
+        }
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
             height: 100vh;
             overflow: hidden;
         }
 
         h1 {
-            color: #333;
+            color: var(--primary);
             margin: 0;
             padding: 10px 0;
             text-align: center;
             font-size: 2em;
-            background-color: #fff;
+            background-color: var(--main-bg);
             border-bottom: 2px solid #333;
         }
 
@@ -31,7 +40,7 @@
 
         #leftPanel {
             width: 280px;
-            background-color: #fff;
+            background-color: var(--main-bg);            
             border-right: 2px solid #333;
             padding: 20px;
             display: flex;
@@ -42,7 +51,7 @@
 
         #gameContainer {
             flex: 1;
-            background-color: white;
+            background-color: var(--main-bg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -51,11 +60,13 @@
         #mazeCanvas {
             display: block;
             border: 1px solid #ccc;
+            margin-bottom: 8px;
+            /* //! might break */
         }
 
         #rightPanel {
             width: 200px;
-            background-color: #fff;
+            background-color: var(--main-bg);
             border-left: 2px solid #333;
             padding: 20px;
             display: flex;
@@ -106,22 +117,23 @@
         #score {
             font-size: 18px;
             font-weight: bold;
-            color: #333;
+            background-color: var(--secondary-bg);
+            color: var(--secondary-text);
             padding: 15px;
-            background-color: #f8f9fa;
             border-radius: 8px;
             text-align: center;
         }
 
         #leaderboard {
-            background-color: #f8f9fa;
+            background-color: var(--secondary-bg);
+            color: var(--secondary-text);
             border-radius: 8px;
             padding: 15px;
         }
 
         #leaderboard h3 {
             margin: 0 0 15px 0;
-            color: #333;
+            color: var(--secondary-text);
             text-align: center;
             font-size: 18px;
         }
@@ -166,7 +178,8 @@
         }
 
         #gameStats {
-            background-color: #e9ecef;
+            background-color: var(--secondary-bg);
+            color: var(--thirdonary-text);
             border-radius: 8px;
             padding: 15px;
             font-size: 14px;
@@ -174,7 +187,7 @@
 
         #gameStats h4 {
             margin: 0 0 10px 0;
-            color: #333;
+            color: var(--secondary-text);
         }
 
         /* Question Modal */
@@ -322,7 +335,8 @@
     </style>
 </head>
 <body>
-    <h1>Maze Adventure Game</h1>
+    <!-- <h1>Maze Adventure Game</h1> -->
+     <h1>走迷宮回答問題</h1>
     
     <div id="gameLayout">
         <div id="leftPanel">
@@ -342,10 +356,15 @@
             </div>
             
             <div id="instructions">
-                <strong>How to Play:</strong><br><br>
+                <!-- <strong>How to Play:</strong><br><br>
                 Use arrow keys to move the blue dot from START (green) to END (red).<br><br>
                 Hold keys longer to move faster!<br><br>
-                Collect the red question points to answer trivia questions along the way!
+                Collect the red question points to answer trivia questions along the way! -->
+                <strong>遊戲說明：</strong><br><br>
+                使用方向鍵將藍色點從起點（綠色）移動到終點（紅色）。<br><br>
+                長按方向鍵可以加快移動速度！<br><br>
+                收集紅色問號點以回答途中出現的問答題！
+
             </div>
         </div>
         
@@ -457,10 +476,15 @@
 
                 // Color variables - easy to customize
                 this.colors = {
-                    mazeWalls: '#333',
-                    player: '#4444ff',
-                    questionPoints: '#ff4444',
+                    // mazeWalls: '#333',
+                    mazeWalls: '#fff',
+                    // player: '#4444ff',
+                    player: '#07a6f5',
+                    // questionPoints: '#ff4444',
+                    questionPoints: '#fff',
+                    // startPoint: '#00ff00',
                     startPoint: '#00ff00',
+                    // endPoint: '#ff0000',
                     endPoint: '#ff0000'
                 };
                 
