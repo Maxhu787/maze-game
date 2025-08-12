@@ -151,7 +151,8 @@
         margin: 0 0 15px 0;
         color: var(--secondary-text);
         text-align: center;
-        font-size: 18px;
+        font-size: 22px;
+        /* font-size: 18px; */
       }
 
       .leaderboard-entry {
@@ -160,14 +161,21 @@
         align-items: center;
         padding: 8px 12px;
         margin: 5px 0;
-        background-color: #fff;
+        background-color: #000;
         border-radius: 6px;
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #555;
       }
 
       .leaderboard-entry.top-score {
-        border-left-color: #ffd700;
-        background-color: #fffbf0;
+        border-left-color: rgb(153, 12, 12);
+      }
+
+      #leaderboardList .leaderboard-entry:nth-child(2) {
+        border-left-color: #a69f1b !important;
+      }
+
+      #leaderboardList .leaderboard-entry:nth-child(3) {
+        border-left-color: rgb(6, 148, 6) !important;
       }
 
       .leaderboard-entry .rank {
@@ -317,12 +325,15 @@
       #nameContent {
         background-color: white;
         margin: 20% auto;
-        padding: 30px;
+        padding: 10px 30px 20px 30px;
         border-radius: 10px;
         width: 80%;
         max-width: 400px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
+      }
+
+      #nameContent h3 {
       }
 
       #nameInput {
@@ -338,6 +349,7 @@
       #submitNameBtn {
         padding: 12px 24px;
         font-size: 16px;
+        width: 100%;
         background-color: #28a745;
         color: white;
         border: none;
@@ -352,7 +364,6 @@
     </style>
   </head>
   <body>
-    <!-- <h1>Maze Adventure Game</h1> -->
     <h1>走迷宮回答問題</h1>
 
     <div id="gameLayout">
@@ -366,7 +377,7 @@
         </div>
 
         <div id="leaderboard">
-          <h3>🏆 Leaderboard</h3>
+          <h3>🏆 排行榜</h3>
           <div id="leaderboardList">
             <div style="text-align: center; color: #666; font-style: italic">
               No scores yet!
@@ -381,21 +392,22 @@
 
       <div id="rightPanel">
         <div id="instructions">
-          <!-- <strong>How to Play:</strong><br><br>
-                Use arrow keys to move the blue dot from START (green) to END (red).<br><br>
-                Hold keys longer to move faster!<br><br>
-                Collect the red question points to answer trivia questions along the way! -->
           <strong>遊戲說明：</strong><br /><br />
           使用方向鍵將藍色點從起點（綠色）移動到終點（紅色）。<br /><br />
           收集路途中碰到的白色點回答選擇題！<br /><br />
           秒數做排名！
         </div>
-        <button id="restartBtn">Restart Game</button>
-        <button id="clearLeaderboardBtn" style="display: none;">clear</button>
+        <button id="restartBtn">開始！</button>
+        <button id="clearLeaderboardBtn" style="display: none">clear</button>
+        <!-- <button id="testQuestionBtn" style="margin-top: 10px">
+          Test Question Modal
+        </button>
+        <button id="testNameBtn" style="margin-top: 6px">
+          Test Name Modal
+        </button> -->
       </div>
     </div>
 
-    <!-- Question Modal -->
     <div id="questionModal">
       <div id="questionContent">
         <div id="questionText"></div>
@@ -404,34 +416,33 @@
         <button class="option" data-index="2"></button>
         <button class="option" data-index="3"></button>
         <div id="feedback"></div>
-        <button id="continueBtn">Continue</button>
+        <button
+          id="continueBtn"
+          style="width: 100%; height: 45px; font-size: 16px"
+        >
+          繼續
+        </button>
       </div>
     </div>
 
-    <!-- Name Input Modal -->
     <div id="nameModal">
       <div id="nameContent">
-        <h3>🎉 Congratulations!</h3>
-        <p>You completed the maze!</p>
-        <p>
-          <strong>Score:</strong> <span id="finalScore"></span> questions
-          correct
-        </p>
-        <p><strong>Time:</strong> <span id="finalTime"></span></p>
-        <p>Enter your name for the leaderboard:</p>
+        <h3>🎉 恭喜你完成了迷宮！</h3>
+        <p>作答題數: <span id="finalScore"></span>題</p>
+        <p>時間: <span id="finalTime"></span></p>
+        <p>請輸入你想在排行榜上顯示的名字:</p>
         <input
           type="text"
           id="nameInput"
-          placeholder="Enter your name"
+          placeholder="輸入名字"
           maxlength="20"
         />
         <br />
-        <button id="submitNameBtn">Submit Score</button>
+        <button id="submitNameBtn">送出</button>
       </div>
     </div>
 
     <script>
-      // Game questions in JSON format
       const questions = [
         {
           question: "What is the capital of France?",
@@ -852,6 +863,25 @@
                 this.submitScore();
               }
             });
+
+          // Test buttons event listeners
+          document
+            .getElementById("testQuestionBtn")
+            .addEventListener("click", () => {
+              // Use first question point if available, else create a dummy
+              let qp = this.questionPoints[0];
+              if (!qp) {
+                qp = { questionIndex: 0 };
+                this.questionPoints[0] = qp;
+              }
+              this.showQuestion(qp, 0);
+            });
+
+          document
+            .getElementById("testNameBtn")
+            .addEventListener("click", () => {
+              this.showNameModal();
+            });
         }
 
         checkWinCondition() {
@@ -958,7 +988,7 @@
         submitScore() {
           const name = document.getElementById("nameInput").value.trim();
           if (!name) {
-            alert("Please enter your name!");
+            alert("請輸入名字");
             return;
           }
 
@@ -1002,6 +1032,8 @@
           //   {"name":"wa","score":1,"time":7500,"date":"2025-08-12T13:41:47.185Z"},
           //   {"name":"awdawd","score":1,"time":41400,"date":"2025-08-12T13:41:31.040Z"},
           //   {"name":"ewfwef","score":1,"time":42200,"date":"2025-08-12T14:05:10.702Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
@@ -1149,11 +1181,26 @@
 
       // Start the game when page loads
       window.addEventListener("load", () => {
-        new MazeGame();
+        const game = new MazeGame();
+
+        // Test button: Show question modal with first question point (or dummy if none)
+        document
+          .getElementById("testQuestionBtn")
+          .addEventListener("click", () => {
+            // Use first question point if available, else create a dummy
+            let qp = game.questionPoints[0];
+            if (!qp) {
+              qp = { questionIndex: 0 };
+              game.questionPoints[0] = qp;
+            }
+            game.showQuestion(qp, 0);
+          });
+
+        // Test button: Show name modal
+        document.getElementById("testNameBtn").addEventListener("click", () => {
+          game.showNameModal();
+        });
       });
-    </script>
-  </body>
-</html>
     </script>
   </body>
 </html>
