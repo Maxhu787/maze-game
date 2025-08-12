@@ -20,7 +20,7 @@
             padding: 10px 0;
             text-align: center;
             font-size: 2em;
-            background-color: #000;
+            background-color: #fff;
             border-bottom: 2px solid #333;
         }
 
@@ -30,38 +30,39 @@
         }
 
         #leftPanel {
-            width: 250px;
-            background-color: #000;
+            width: 280px;
+            background-color: #fff;
             border-right: 2px solid #333;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            overflow-y: auto;
         }
 
         #gameContainer {
             flex: 1;
-            background-color: #000;
+            background-color: white;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         #mazeCanvas {
-            border-radius: 18px;
             display: block;
-            border: 4px solid #ccc;
+            border: 1px solid #ccc;
         }
 
         #rightPanel {
             width: 200px;
-            background-color: #000;
+            background-color: #fff;
             border-left: 2px solid #333;
             padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 20px;
         }
 
         #restartBtn {
@@ -80,6 +81,22 @@
             background-color: #45a049;
         }
 
+        #clearLeaderboardBtn {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        #clearLeaderboardBtn:hover {
+            background-color: #c82333;
+        }
+
         #instructions {
             color: #666;
             line-height: 1.5;
@@ -94,6 +111,70 @@
             background-color: #f8f9fa;
             border-radius: 8px;
             text-align: center;
+        }
+
+        #leaderboard {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        #leaderboard h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background-color: #fff;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+
+        .leaderboard-entry.top-score {
+            border-left-color: #ffd700;
+            background-color: #fffbf0;
+        }
+
+        .leaderboard-entry .rank {
+            font-weight: bold;
+            color: #666;
+            min-width: 25px;
+        }
+
+        .leaderboard-entry .name {
+            flex: 1;
+            margin: 0 10px;
+            font-weight: 500;
+        }
+
+        .leaderboard-entry .score {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .leaderboard-entry .time {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        #gameStats {
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        #gameStats h4 {
+            margin: 0 0 10px 0;
+            color: #333;
         }
 
         /* Question Modal */
@@ -190,21 +271,82 @@
         #continueBtn:hover {
             background-color: #0056b3;
         }
+
+        /* Name Input Modal */
+        #nameModal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        #nameContent {
+            background-color: white;
+            margin: 20% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #nameInput {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            margin: 15px 0;
+            box-sizing: border-box;
+        }
+
+        #submitNameBtn {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #submitNameBtn:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
-    <h1>走迷宮回答問題</h1>
+    <h1>Maze Adventure Game</h1>
     
     <div id="gameLayout">
         <div id="leftPanel">
             <div id="score">Questions Answered: 0</div>
-            <div id="instructions">
-                <strong>遊戲說明：</strong><br><br>
-                使用方向鍵將藍色點從起點（綠色）移動到終點（紅色）。<br><br>
-                長按方向鍵可以加快移動速度！<br><br>
-                收集紅色問號點以回答途中出現的問答題！
+            
+            <div id="gameStats">
+                <h4>Current Game</h4>
+                <div>Time: <span id="gameTime">00:00</span></div>
+                <div>Questions Remaining: <span id="questionsRemaining">5</span></div>
             </div>
-
+            
+            <div id="leaderboard">
+                <h3>🏆 Leaderboard</h3>
+                <div id="leaderboardList">
+                    <div style="text-align: center; color: #666; font-style: italic;">No scores yet!</div>
+                </div>
+            </div>
+            
+            <div id="instructions">
+                <strong>How to Play:</strong><br><br>
+                Use arrow keys to move the blue dot from START (green) to END (red).<br><br>
+                Hold keys longer to move faster!<br><br>
+                Collect the red question points to answer trivia questions along the way!
+            </div>
         </div>
         
         <div id="gameContainer">
@@ -213,10 +355,11 @@
         
         <div id="rightPanel">
             <button id="restartBtn">Restart Game</button>
+            <button id="clearLeaderboardBtn">Clear Leaderboard</button>
         </div>
     </div>
 
-     Question Modal 
+    <!-- Question Modal -->
     <div id="questionModal">
         <div id="questionContent">
             <div id="questionText"></div>
@@ -226,6 +369,20 @@
             <button class="option" data-index="3"></button>
             <div id="feedback"></div>
             <button id="continueBtn">Continue</button>
+        </div>
+    </div>
+
+    <!-- Name Input Modal -->
+    <div id="nameModal">
+        <div id="nameContent">
+            <h3>🎉 Congratulations!</h3>
+            <p>You completed the maze!</p>
+            <p><strong>Score:</strong> <span id="finalScore"></span> questions correct</p>
+            <p><strong>Time:</strong> <span id="finalTime"></span></p>
+            <p>Enter your name for the leaderboard:</p>
+            <input type="text" id="nameInput" placeholder="Enter your name" maxlength="20">
+            <br>
+            <button id="submitNameBtn">Submit Score</button>
         </div>
     </div>
 
@@ -281,7 +438,7 @@
                 
                 // Calculate canvas size to fill available height
                 const availableHeight = window.innerHeight - 60; // Subtract header height
-                const availableWidth = window.innerWidth - 450; // Subtract left and right panels
+                const availableWidth = window.innerWidth - 480; // Subtract left and right panels
                 
                 // Use the smaller dimension to keep maze square
                 const size = Math.min(availableHeight - 40, availableWidth - 40); // Leave some padding
@@ -300,11 +457,9 @@
 
                 // Color variables - easy to customize
                 this.colors = {
-                    mazeWalls: '#fff',
-                    // player: '#4444ff',
-                    player: '#07a6f5',
-                    questionPoints: '#fff',
-                    // questionPoints: '#ff4444',
+                    mazeWalls: '#333',
+                    player: '#4444ff',
+                    questionPoints: '#ff4444',
                     startPoint: '#00ff00',
                     endPoint: '#ff0000'
                 };
@@ -326,8 +481,14 @@
                 
                 this.keysPressed = {};
 
+                // Game timing
+                this.startTime = null;
+                this.gameTime = 0;
+                this.gameTimer = null;
+
                 this.initializeGame();
                 this.setupEventListeners();
+                this.loadLeaderboard();
             }
 
             initializeGame() {
@@ -344,7 +505,18 @@
                 this.answeredQuestions.clear();
                 this.score = 0;
                 this.gameWon = false;
+                this.startTime = Date.now();
+                this.gameTime = 0;
+                
+                // Start game timer
+                if (this.gameTimer) clearInterval(this.gameTimer);
+                this.gameTimer = setInterval(() => {
+                    this.gameTime = Date.now() - this.startTime;
+                    this.updateGameStats();
+                }, 100);
+                
                 this.updateScore();
+                this.updateGameStats();
                 this.draw();
             }
 
@@ -506,9 +678,10 @@
 
                 // Game loop for smooth continuous movement
                 const gameLoop = () => {
-                    if (document.getElementById('questionModal').style.display === 'block') {
+                    if (document.getElementById('questionModal').style.display === 'block' || 
+                        document.getElementById('nameModal').style.display === 'block') {
                         requestAnimationFrame(gameLoop);
-                        return; // Don't move while question is showing
+                        return; // Don't move while modal is showing
                     }
                     
                     let moved = false;
@@ -561,6 +734,13 @@
                     this.initializeGame();
                 });
 
+                document.getElementById('clearLeaderboardBtn').addEventListener('click', () => {
+                    if (confirm('Are you sure you want to clear the leaderboard? This cannot be undone.')) {
+                        localStorage.removeItem('mazeGameLeaderboard');
+                        this.loadLeaderboard();
+                    }
+                });
+
                 // Question modal event listeners
                 const options = document.querySelectorAll('.option');
                 options.forEach(option => {
@@ -572,6 +752,17 @@
                 document.getElementById('continueBtn').addEventListener('click', () => {
                     this.closeQuestionModal();
                 });
+
+                // Name modal event listeners
+                document.getElementById('submitNameBtn').addEventListener('click', () => {
+                    this.submitScore();
+                });
+
+                document.getElementById('nameInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.submitScore();
+                    }
+                });
             }
 
             checkWinCondition() {
@@ -582,9 +773,8 @@
                 
                 if (distance < this.cellSize / 2 && !this.gameWon) {
                     this.gameWon = true;
-                    setTimeout(() => {
-                        alert(`Congratulations! You completed the maze!\nQuestions answered correctly: ${this.score}`);
-                    }, 100);
+                    clearInterval(this.gameTimer);
+                    this.showNameModal();
                 }
             }
 
@@ -655,6 +845,7 @@
                 // Mark question as answered
                 this.answeredQuestions.add(this.currentQuestionIndex);
                 this.updateScore();
+                this.updateGameStats();
             }
 
             closeQuestionModal() {
@@ -662,8 +853,87 @@
                 this.draw(); // Redraw to remove the question point
             }
 
+            showNameModal() {
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('finalTime').textContent = this.formatTime(this.gameTime);
+                document.getElementById('nameInput').value = '';
+                document.getElementById('nameModal').style.display = 'block';
+                document.getElementById('nameInput').focus();
+            }
+
+            submitScore() {
+                const name = document.getElementById('nameInput').value.trim();
+                if (!name) {
+                    alert('Please enter your name!');
+                    return;
+                }
+
+                const scoreData = {
+                    name: name,
+                    score: this.score,
+                    time: this.gameTime,
+                    date: new Date().toISOString()
+                };
+
+                this.saveScore(scoreData);
+                document.getElementById('nameModal').style.display = 'none';
+                this.loadLeaderboard();
+            }
+
+            saveScore(scoreData) {
+                let leaderboard = JSON.parse(localStorage.getItem('mazeGameLeaderboard') || '[]');
+                leaderboard.push(scoreData);
+                
+                // Sort by score (descending) then by time (ascending)
+                leaderboard.sort((a, b) => {
+                    if (b.score !== a.score) {
+                        return b.score - a.score;
+                    }
+                    return a.time - b.time;
+                });
+
+                // Keep only top 10 scores
+                leaderboard = leaderboard.slice(0, 10);
+                
+                localStorage.setItem('mazeGameLeaderboard', JSON.stringify(leaderboard));
+            }
+
+            loadLeaderboard() {
+                const leaderboard = JSON.parse(localStorage.getItem('mazeGameLeaderboard') || '[]');
+                const leaderboardList = document.getElementById('leaderboardList');
+                
+                if (leaderboard.length === 0) {
+                    leaderboardList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic;">No scores yet!</div>';
+                    return;
+                }
+
+                leaderboardList.innerHTML = leaderboard.map((entry, index) => {
+                    const isTopScore = index === 0;
+                    return `
+                        <div class="leaderboard-entry ${isTopScore ? 'top-score' : ''}">
+                            <span class="rank">#${index + 1}</span>
+                            <span class="name">${entry.name}</span>
+                            <span class="score">${entry.score}/5</span>
+                            <span class="time">${this.formatTime(entry.time)}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            formatTime(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
             updateScore() {
                 document.getElementById('score').textContent = `Questions Answered: ${this.score}`;
+            }
+
+            updateGameStats() {
+                document.getElementById('gameTime').textContent = this.formatTime(this.gameTime);
+                document.getElementById('questionsRemaining').textContent = this.questionPoints.length - this.answeredQuestions.size;
             }
 
             draw() {
@@ -697,7 +967,7 @@
                 this.ctx.fillStyle = '#000';
                 this.ctx.font = '10px Arial';
                 this.ctx.textAlign = 'center';
-                // this.ctx.fillText('START', 1.5 * this.cellSize, 1.5 * this.cellSize + 3);
+                this.ctx.fillText('START', 1.5 * this.cellSize, 1.5 * this.cellSize + 3);
 
                 // Draw end point (red square)
                 const endGridX = this.cols - 2;
