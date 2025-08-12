@@ -4,3 +4,5 @@
 - get rid of stupid easy mazes
 - create a4 page with qr codes
 - question page
+
+s
