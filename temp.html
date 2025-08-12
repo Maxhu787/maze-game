@@ -395,7 +395,7 @@
           <strong>遊戲說明：</strong><br /><br />
           使用方向鍵將藍色點從起點（綠色）移動到終點（紅色）。<br /><br />
           收集路途中碰到的白色點回答選擇題！<br /><br />
-          秒數做排名！
+          人人有獎，秒數做排名！
         </div>
         <button id="restartBtn">開始！</button>
         <button id="clearLeaderboardBtn" style="display: none">clear</button>
@@ -1042,6 +1042,7 @@
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
           //   ]`
           // );
@@ -1078,9 +1079,12 @@
           const seconds = Math.floor(milliseconds / 1000);
           const minutes = Math.floor(seconds / 60);
           const remainingSeconds = seconds % 60;
+          const ms = Math.floor((milliseconds % 1000) / 10)
+            .toString()
+            .padStart(2, "0");
           return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
             .toString()
-            .padStart(2, "0")}`;
+            .padStart(2, "0")}.${ms}`;
         }
 
         updateScore() {
