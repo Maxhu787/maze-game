@@ -980,13 +980,8 @@
           );
           leaderboard.push(scoreData);
 
-          // Sort by score (descending) then by time (ascending)
-          leaderboard.sort((a, b) => {
-            if (b.score !== a.score) {
-              return b.score - a.score;
-            }
-            return a.time - b.time;
-          });
+          // Sort by time (ascending, i.e., fastest first)
+          leaderboard.sort((a, b) => a.time - b.time);
 
           // Keep only top 10 scores
           leaderboard = leaderboard.slice(0, 10);
@@ -1018,6 +1013,8 @@
             {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
             ]`
           );
+          // Sort leaderboard by time (ascending)
+          leaderboard.sort((a, b) => a.time - b.time);
           const leaderboardList = document.getElementById("leaderboardList");
 
           if (leaderboard.length === 0) {
@@ -1154,6 +1151,9 @@
       window.addEventListener("load", () => {
         new MazeGame();
       });
+    </script>
+  </body>
+</html>
     </script>
   </body>
 </html>
