@@ -47,6 +47,7 @@
         flex-direction: column;
         gap: 20px;
         overflow-y: auto;
+        /* Remove overflow-y: auto here, move to leaderboardList */
       }
 
       #gameContainer {
@@ -65,7 +66,7 @@
       }
 
       #rightPanel {
-        width: 200px;
+        width: 280px;
         background-color: var(--main-bg);
         border-left: 2px solid #333;
         padding: 20px;
@@ -109,7 +110,10 @@
       }
 
       #instructions {
-        color: #666;
+        background-color: var(--secondary-bg);
+        color: var(--secondary-text);
+        border-radius: 8px;
+        padding: 15px;
         line-height: 1.5;
         font-size: 14px;
       }
@@ -129,6 +133,18 @@
         color: var(--secondary-text);
         border-radius: 8px;
         padding: 15px;
+        margin-bottom: 8px;
+        flex: 1 1 0%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #leaderboardList {
+        max-height: none;
+        overflow-y: auto;
+        flex: 1 1 0%;
+        min-height: 0;
       }
 
       #leaderboard h3 {
@@ -183,6 +199,7 @@
         border-radius: 8px;
         padding: 15px;
         font-size: 14px;
+        flex: 0 0 auto;
       }
 
       #gameStats h4 {
@@ -340,7 +357,7 @@
 
     <div id="gameLayout">
       <div id="leftPanel">
-        <div id="score">Questions Answered: 0</div>
+        <!-- <div id="score">Questions Answered: 0</div> -->
 
         <div id="gameStats">
           <h4>Current Game</h4>
@@ -356,7 +373,13 @@
             </div>
           </div>
         </div>
+      </div>
 
+      <div id="gameContainer">
+        <canvas id="mazeCanvas"></canvas>
+      </div>
+
+      <div id="rightPanel">
         <div id="instructions">
           <!-- <strong>How to Play:</strong><br><br>
                 Use arrow keys to move the blue dot from START (green) to END (red).<br><br>
@@ -367,13 +390,6 @@
           長按方向鍵可以加快移動速度！<br /><br />
           收集紅色問號點以回答途中出現的問答題！
         </div>
-      </div>
-
-      <div id="gameContainer">
-        <canvas id="mazeCanvas"></canvas>
-      </div>
-
-      <div id="rightPanel">
         <button id="restartBtn">Restart Game</button>
         <button id="clearLeaderboardBtn">Clear Leaderboard</button>
       </div>
@@ -985,6 +1001,23 @@
           const leaderboard = JSON.parse(
             localStorage.getItem("mazeGameLeaderboard") || "[]"
           );
+          // const leaderboard = JSON.parse(
+          //   `[
+          //   {"name":"ssss","score":2,"time":15400,"date":"2025-08-12T14:05:46.664Z"},
+          //   {"name":"wa","score":1,"time":7500,"date":"2025-08-12T13:41:47.185Z"},
+          //   {"name":"awdawd","score":1,"time":41400,"date":"2025-08-12T13:41:31.040Z"},
+          //   {"name":"ewfwef","score":1,"time":42200,"date":"2025-08-12T14:05:10.702Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
+          //   ]`
+          // );
           const leaderboardList = document.getElementById("leaderboardList");
 
           if (leaderboard.length === 0) {
@@ -1022,9 +1055,9 @@
         }
 
         updateScore() {
-          document.getElementById(
-            "score"
-          ).textContent = `Questions Answered: ${this.score}`;
+          // document.getElementById(
+          //   "score"
+          // ).textContent = `Questions Answered: ${this.score}`;
         }
 
         updateGameStats() {
