@@ -993,26 +993,26 @@
         }
 
         loadLeaderboard() {
-          // const leaderboard = JSON.parse(
-          //   localStorage.getItem("mazeGameLeaderboard") || "[]"
-          // );
           const leaderboard = JSON.parse(
-            `[
-            {"name":"ssss","score":2,"time":15400,"date":"2025-08-12T14:05:46.664Z"},
-            {"name":"wa","score":1,"time":7500,"date":"2025-08-12T13:41:47.185Z"},
-            {"name":"awdawd","score":1,"time":41400,"date":"2025-08-12T13:41:31.040Z"},
-            {"name":"ewfwef","score":1,"time":42200,"date":"2025-08-12T14:05:10.702Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-            {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
-            ]`
+            localStorage.getItem("mazeGameLeaderboard") || "[]"
           );
+          // const leaderboard = JSON.parse(
+          //   `[
+          //   {"name":"ssss","score":2,"time":15400,"date":"2025-08-12T14:05:46.664Z"},
+          //   {"name":"wa","score":1,"time":7500,"date":"2025-08-12T13:41:47.185Z"},
+          //   {"name":"awdawd","score":1,"time":41400,"date":"2025-08-12T13:41:31.040Z"},
+          //   {"name":"ewfwef","score":1,"time":42200,"date":"2025-08-12T14:05:10.702Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
+          //   ]`
+          // );
           // Sort leaderboard by time (ascending)
           leaderboard.sort((a, b) => a.time - b.time);
           const leaderboardList = document.getElementById("leaderboardList");
