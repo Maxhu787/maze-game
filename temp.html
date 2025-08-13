@@ -486,6 +486,45 @@
         },
       ];
 
+      // Standalone leaderboard loader for page refresh
+      function loadLeaderboardStandalone() {
+        const leaderboard = JSON.parse(
+          localStorage.getItem("mazeGameLeaderboard") || "[]"
+        );
+        leaderboard.sort((a, b) => a.time - b.time);
+        const leaderboardList = document.getElementById("leaderboardList");
+        if (!leaderboardList) return;
+        if (leaderboard.length === 0) {
+          leaderboardList.innerHTML =
+            '<div style="text-align: center; color: #666; font-style: italic;">No scores yet!</div>';
+          return;
+        }
+        leaderboardList.innerHTML = leaderboard
+          .map((entry, index) => {
+            const isTopScore = index === 0;
+            return `
+              <div class="leaderboard-entry ${isTopScore ? "top-score" : ""}">
+                  <span class="rank">#${index + 1}</span>
+                  <span class="name">${entry.name}</span>
+                  <span class="score">${entry.score}/5</span>
+                  <span class="time">${formatTimeStandalone(entry.time)}</span>
+              </div>
+            `;
+          })
+          .join("");
+      }
+      function formatTimeStandalone(milliseconds) {
+        const seconds = Math.floor(milliseconds / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        const ms = Math.floor((milliseconds % 1000) / 10)
+          .toString()
+          .padStart(2, "0");
+        return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+          .toString()
+          .padStart(2, "0")}.${ms}`;
+      }
+
       class MazeGame {
         constructor() {
           this.canvas = document.getElementById("mazeCanvas");
@@ -1043,6 +1082,10 @@
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
           //   ]`
           // );
@@ -1185,7 +1228,12 @@
 
       // Start the game when page loads
       window.addEventListener("load", () => {
+        loadLeaderboardStandalone(); // Always load leaderboard on page refresh
+
         const game = new MazeGame();
+
+        // Always load leaderboard on page refresh
+        game.loadLeaderboard();
 
         // Test button: Show question modal with first question point (or dummy if none)
         document
