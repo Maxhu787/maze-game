@@ -1013,10 +1013,11 @@
         }
 
         showNameModal() {
+          // Subtract 1 second per correct answer for display
+          const adjustedTime = Math.max(0, this.gameTime - this.score * 1000);
           document.getElementById("finalScore").textContent = this.score;
-          document.getElementById("finalTime").textContent = this.formatTime(
-            this.gameTime
-          );
+          document.getElementById("finalTime").textContent =
+            this.formatTime(adjustedTime);
           document.getElementById("nameInput").value = "";
           document.getElementById("nameModal").style.display = "block";
           document.getElementById("nameInput").focus();
@@ -1029,10 +1030,13 @@
             return;
           }
 
+          // Subtract 1 second per correct answer for leaderboard
+          const adjustedTime = Math.max(0, this.gameTime - this.score * 1000);
+
           const scoreData = {
             name: name,
             score: this.score,
-            time: this.gameTime,
+            time: adjustedTime,
             date: new Date().toISOString(),
           };
 
@@ -1069,6 +1073,8 @@
           //   {"name":"wa","score":1,"time":7500,"date":"2025-08-12T13:41:47.185Z"},
           //   {"name":"awdawd","score":1,"time":41400,"date":"2025-08-12T13:41:31.040Z"},
           //   {"name":"ewfwef","score":1,"time":42200,"date":"2025-08-12T14:05:10.702Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
+          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
           //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
