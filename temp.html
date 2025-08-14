@@ -482,12 +482,6 @@
           options: ["2", "3", "4", "5"],
           correct: 3,
         },
-        {
-          question:
-            "int f (int i) {\n\tif (i>0)\n\t\tif (((i/2)%2)==0)\n\t\t\treturn f(i-2)*i;\n\t\telse\n\t\t\treturn f(i-2)*(-i);\n\t\telse\n\treturn 1;\n}",
-          options: ["1", "3840", "-3840", "執行時導致無窮迴圈，不會停止執行"],
-          correct: 2,
-        },
       ];
 
       // Standalone leaderboard loader for page refresh
@@ -961,10 +955,9 @@
           const question = questions[questionPoint.questionIndex];
 
           // Support line breaks in question text
-          document.getElementById("questionText").innerHTML =
-            question.question.replace(/\n/g, "<br>");
-          document.getElementById("questionText").innerHTML =
-            question.question.replace(/\t/g, "    ");
+          document.getElementById("questionText").innerHTML = question.question
+            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+            .replace(/\n/g, "<br>");
 
           const options = document.querySelectorAll(".option");
           options.forEach((option, index) => {
