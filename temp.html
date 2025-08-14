@@ -442,9 +442,51 @@
     <script>
       const questions = [
         {
-          question: "What is the test?",
+          question: "1 + 1 是多少？🙂",
           options: ["1", "2", "3", "4"],
+          correct: 1,
+        },
+        {
+          question:
+            "如果 f(n) = n * f(n-1) 且 f(1) = 1，那麼 f(3) 會回傳多少？",
+          options: ["3", "6", "9", "12"],
+          correct: 1,
+        },
+        {
+          question: "這個迴圈會跑幾次？\nfor(int i = 0; i < 5; i++)",
+          options: ["4", "5", "6", "∞"],
+          correct: 1,
+        },
+        {
+          question: "11 % 4 = x ， x 是多少？",
+          options: ["1", "2", "3", "4"],
+          correct: 2,
+        },
+        {
+          question: "(5 > 2) ? 'a' : 'b' 的輸出是什麼？",
+          options: ["a", "b", "5", "2"],
+          correct: 0,
+        },
+        {
+          question: "第一個商業化網頁瀏覽器是在哪一年推出？",
+          options: ["1985~1987", "1988~1990", "1993~1994", "1999~2001"],
+          correct: 2,
+        },
+        {
+          question: "(0 || 1) || (1 & 1) 輸出？",
+          options: ["true", "false", "1", "2"],
+          correct: 0,
+        },
+        {
+          question: "二進位 101 等於十進位多少？",
+          options: ["2", "3", "4", "5"],
           correct: 3,
+        },
+        {
+          question:
+            "int f (int i) {\n\tif (i>0)\n\t\tif (((i/2)%2)==0)\n\t\t\treturn f(i-2)*i;\n\t\telse\n\t\t\treturn f(i-2)*(-i);\n\t\telse\n\treturn 1;\n}",
+          options: ["1", "3840", "-3840", "執行時導致無窮迴圈，不會停止執行"],
+          correct: 2,
         },
       ];
 
@@ -531,7 +573,7 @@
             y: 1.5 * this.cellSize,
           };
           this.playerRadius = this.cellSize / 3;
-          this.moveSpeed = 7; // 4
+          this.moveSpeed = 4; // 4
           // ↑ Change this value to adjust speed. Example: 8 for fast, 2 for slow.
 
           this.questionPoints = [];
@@ -918,8 +960,11 @@
           this.currentQuestionIndex = pointIndex;
           const question = questions[questionPoint.questionIndex];
 
-          document.getElementById("questionText").textContent =
-            question.question;
+          // Support line breaks in question text
+          document.getElementById("questionText").innerHTML =
+            question.question.replace(/\n/g, "<br>");
+          document.getElementById("questionText").innerHTML =
+            question.question.replace(/\t/g, "    ");
 
           const options = document.querySelectorAll(".option");
           options.forEach((option, index) => {
@@ -1032,33 +1077,6 @@
           const leaderboard = JSON.parse(
             localStorage.getItem("mazeGameLeaderboard") || "[]"
           );
-          // const leaderboard = JSON.parse(
-          //   `[
-          //   {"name":"ssss","score":2,"time":15400,"date":"2025-08-12T14:05:46.664Z"},
-          //   {"name":"wa","score":1,"time":7500,"date":"2025-08-12T13:41:47.185Z"},
-          //   {"name":"awdawd","score":1,"time":41400,"date":"2025-08-12T13:41:31.040Z"},
-          //   {"name":"ewfwef","score":1,"time":42200,"date":"2025-08-12T14:05:10.702Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"w","score":0,"time":2600,"date":"2025-08-12T13:42:05.958Z"},
-          //   {"name":"vevwe","score":0,"time":2801,"date":"2025-08-12T13:41:58.332Z"}
-          //   ]`
-          // );
           // Sort leaderboard by time (ascending)
           leaderboard.sort((a, b) => a.time - b.time);
           const leaderboardList = document.getElementById("leaderboardList");
