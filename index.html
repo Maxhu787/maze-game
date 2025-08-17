@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maze Game</title>
+  </head>
+  <body>
+    <h1>走迷宮回答問題</h1>
+
+    <div id="gameLayout">
+      <div id="leftPanel">
+        <!-- <div id="score">Questions Answered: 0</div> -->
+
+        <div id="gameStats">
+          <h4>Current Game</h4>
+          <div>Time: <span id="gameTime">00:00</span></div>
+          <div>Questions Remaining: <span id="questionsRemaining">5</span></div>
+        </div>
+
+        <div id="leaderboard">
+          <h3>🏆 排行榜</h3>
+          <div id="leaderboardList">
+            <div style="text-align: center; color: #666; font-style: italic">
+              No scores yet!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="gameContainer">
+        <canvas id="mazeCanvas"></canvas>
+      </div>
+
+      <div id="rightPanel">
+        <div id="instructions">
+          <strong>遊戲說明：</strong><br /><br />
+          使用方向鍵將藍色點從起點（綠色）移動到終點（紅色）。<br /><br />
+          收集路途中碰到的白色點回答選擇題！<br /><br />
+          人人有獎，秒數做排名！
+        </div>
+        <button id="restartBtn">開始！</button>
+        <button id="clearLeaderboardBtn" style="display: none">clear</button>
+        <!-- <button id="testQuestionBtn" style="margin-top: 10px">
+          Test Question Modal
+        </button>
+        <button id="testNameBtn" style="margin-top: 6px">
+          Test Name Modal
+        </button> -->
+      </div>
+    </div>
+
+    <div id="questionModal">
+      <div id="questionContent">
+        <div id="questionText"></div>
+        <button class="option" data-index="0"></button>
+        <button class="option" data-index="1"></button>
+        <button class="option" data-index="2"></button>
+        <button class="option" data-index="3"></button>
+        <div id="feedback"></div>
+        <button
+          id="continueBtn"
+          style="width: 100%; height: 45px; font-size: 16px"
+        >
+          繼續
+        </button>
+      </div>
+    </div>
+
+    <!-- <div id="nameModal">
+      <div id="nameContent">
+        <h3>🎉 恭喜你完成了迷宮！</h3>
+        <p>作答題數: <span id="finalScore"></span>題</p>
+        <p>時間: <span id="finalTime"></span></p>
+        <p>請輸入你想在排行榜上顯示的名字:</p>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="輸入名字"
+          maxlength="20"
+        />
+        <br />
+        <button id="submitNameBtn">送出</button>
+      </div>
+    </div> -->
+  </body>
+</html>
