@@ -1,0 +1,353 @@
+:root {
+  --main-bg: #010e19;
+  --secondary-bg: #121b26;
+  --secondary-bg-hover: #1d2a38;
+  --main-text: #fff;
+  --secondary-text: #aaaaaa;
+  --thirdonary-text: #666;
+  --primary: #3a80f6;
+  --secondary: #92b9fc;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+h1 {
+  color: var(--main-text);
+  margin: 0;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 2em;
+  background-color: var(--main-bg);
+  border-bottom: 2px solid #333;
+}
+
+#gameLayout {
+  display: flex;
+  height: calc(100vh - 60px); /* Subtract header height */
+}
+
+#leftPanel {
+  width: 280px;
+  background-color: var(--main-bg);
+  border-right: 2px solid #333;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  /* Remove overflow-y: auto here, move to leaderboardList */
+}
+
+#gameContainer {
+  flex: 1;
+  background-color: var(--main-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#mazeCanvas {
+  display: block;
+  border: 1px solid #ccc;
+  margin-bottom: 8px;
+  /* //! might break */
+}
+
+#rightPanel {
+  width: 280px;
+  background-color: var(--main-bg);
+  border-left: 2px solid #333;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+#restartBtn {
+  padding: 15px 25px;
+  font-size: 18px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+#restartBtn:hover {
+  background-color: #45a049;
+}
+
+#clearLeaderboardBtn {
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+#clearLeaderboardBtn:hover {
+  background-color: #c82333;
+}
+
+#instructions {
+  background-color: var(--secondary-bg);
+  color: var(--secondary-text);
+  border-radius: 8px;
+  padding: 15px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+#score {
+  font-size: 18px;
+  font-weight: bold;
+  background-color: var(--secondary-bg);
+  color: var(--secondary-text);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#leaderboard {
+  background-color: var(--secondary-bg);
+  color: var(--secondary-text);
+  border-radius: 8px;
+  padding: 15px;
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#leaderboardList {
+  max-height: none;
+  overflow-y: auto;
+  flex: 1 1 0%;
+  min-height: 0;
+  margin-top: -6px;
+}
+
+#leaderboard h3 {
+  margin: 0 0 15px 0;
+  color: var(--secondary-text);
+  text-align: center;
+  font-size: 22px;
+  /* font-size: 18px; */
+}
+
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 5px 0;
+  background-color: #000;
+  border-radius: 6px;
+  border-left: 4px solid #555;
+}
+
+.leaderboard-entry.top-score {
+  border-left-color: rgb(153, 12, 12);
+}
+
+#leaderboardList .leaderboard-entry:nth-child(2) {
+  border-left-color: #a69f1b !important;
+}
+
+#leaderboardList .leaderboard-entry:nth-child(3) {
+  border-left-color: rgb(6, 148, 6) !important;
+}
+
+.leaderboard-entry .rank {
+  font-weight: bold;
+  color: #666;
+  min-width: 25px;
+}
+
+.leaderboard-entry .name {
+  flex: 1;
+  margin: 0 10px;
+  font-weight: 500;
+}
+
+.leaderboard-entry .score {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.leaderboard-entry .time {
+  font-size: 12px;
+  color: #666;
+  margin-left: 10px;
+}
+
+#gameStats {
+  background-color: var(--secondary-bg);
+  color: var(--thirdonary-text);
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 14px;
+  flex: 0 0 auto;
+}
+
+#gameStats h4 {
+  margin: 0 0 10px 0;
+  color: var(--secondary-text);
+}
+
+/* Question Modal */
+#questionModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#questionContent {
+  background-color: white;
+  margin: 10% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#questionText {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.option:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.option.correct {
+  background-color: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.option.incorrect {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+#feedback {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#feedback.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+#feedback.incorrect {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+#continueBtn {
+  display: none;
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#continueBtn:hover {
+  background-color: #0056b3;
+}
+
+/* Name Input Modal */
+#nameModal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+#nameContent {
+  background-color: white;
+  margin: 20% auto;
+  padding: 10px 30px 20px 30px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#nameInput {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  margin: 15px 0;
+  box-sizing: border-box;
+}
+
+#submitNameBtn {
+  padding: 12px 24px;
+  font-size: 16px;
+  width: 100%;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#submitNameBtn:hover {
+  background-color: #218838;
+}
