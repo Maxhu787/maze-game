@@ -35,7 +35,7 @@
 
       #gameLayout {
         display: flex;
-        height: calc(100vh - 60px); /* Subtract header height */
+        height: calc(100vh - 60px);
       }
 
       #leftPanel {
@@ -47,7 +47,6 @@
         flex-direction: column;
         gap: 20px;
         overflow-y: auto;
-        /* Remove overflow-y: auto here, move to leaderboardList */
       }
 
       #gameContainer {
@@ -62,7 +61,6 @@
         display: block;
         border: 1px solid #ccc;
         margin-bottom: 8px;
-        /* //! might break */
       }
 
       #rightPanel {
@@ -152,7 +150,6 @@
         color: var(--secondary-text);
         text-align: center;
         font-size: 22px;
-        /* font-size: 18px; */
       }
 
       .leaderboard-entry {
@@ -215,7 +212,6 @@
         color: var(--secondary-text);
       }
 
-      /* Question Modal */
       #questionModal {
         display: none;
         position: fixed;
@@ -310,7 +306,6 @@
         background-color: #0056b3;
       }
 
-      /* Name Input Modal */
       #nameModal {
         display: none;
         position: fixed;
@@ -484,7 +479,6 @@
         },
       ];
 
-      // Standalone leaderboard loader for page refresh
       function loadLeaderboardStandalone() {
         const leaderboard = JSON.parse(
           localStorage.getItem("mazeGameLeaderboard") || "[]"
@@ -528,47 +522,34 @@
           this.canvas = document.getElementById("mazeCanvas");
           this.ctx = this.canvas.getContext("2d");
 
-          // Calculate canvas size to fill available height
-          const availableHeight = window.innerHeight - 60; // Subtract header height
-          const availableWidth = window.innerWidth - 480; // Subtract left and right panels
+          const availableHeight = window.innerHeight - 60;
+          const availableWidth = window.innerWidth - 480;
 
-          // Use the smaller dimension to keep maze square
-          const size = Math.min(availableHeight - 40, availableWidth - 40); // Leave some padding
+          const size = Math.min(availableHeight - 40, availableWidth - 40);
 
           this.canvas.width = size;
           this.canvas.height = size;
-
-          // Calculate optimal cell size to fill canvas evenly
-          this.cols = 29; // Odd number for proper maze generation
-          this.rows = 29; // Odd number for proper maze generation
+          this.cols = 29;
+          this.rows = 29;
           this.cellSize = Math.floor(size / this.cols);
 
-          // Adjust canvas size to fit perfectly
           this.canvas.width = this.cols * this.cellSize;
           this.canvas.height = this.rows * this.cellSize;
 
-          // Color variables - easy to customize
           this.colors = {
-            // mazeWalls: '#333',
             mazeWalls: "#fff",
-            // player: '#4444ff',
             player: "#07a6f5",
-            // questionPoints: '#ff4444',
             questionPoints: "#fff",
-            // startPoint: '#00ff00',
             startPoint: "#00ff00",
-            // endPoint: '#ff0000',
             endPoint: "#ff0000",
           };
 
-          // Player positions - now using pixel coordinates for smooth movement
           this.player = {
             x: 1.5 * this.cellSize,
             y: 1.5 * this.cellSize,
           };
           this.playerRadius = this.cellSize / 3;
-          this.moveSpeed = 7; // 4
-          // ↑ Change this value to adjust speed. Example: 8 for fast, 2 for slow.
+          this.moveSpeed = 7;
 
           this.questionPoints = [];
           this.answeredQuestions = new Set();
@@ -579,7 +560,6 @@
 
           this.keysPressed = {};
 
-          // Game timing
           this.startTime = null;
           this.gameTime = 0;
           this.gameTimer = null;
@@ -606,7 +586,6 @@
           this.startTime = Date.now();
           this.gameTime = 0;
 
-          // Start game timer
           if (this.gameTimer) clearInterval(this.gameTimer);
           this.gameTimer = setInterval(() => {
             this.gameTime = Date.now() - this.startTime;
@@ -619,12 +598,10 @@
         }
 
         generateMaze() {
-          // Initialize maze with walls
           this.maze = Array(this.rows)
             .fill()
             .map(() => Array(this.cols).fill(1));
 
-          // Recursive backtracking maze generation
           const stack = [];
           const start = { x: 1, y: 1 };
           this.maze[start.y][start.x] = 0;
@@ -638,7 +615,6 @@
               const next =
                 neighbors[Math.floor(Math.random() * neighbors.length)];
 
-              // Remove wall between current and next
               const wallX = current.x + (next.x - current.x) / 2;
               const wallY = current.y + (next.y - current.y) / 2;
               this.maze[wallY][wallX] = 0;
@@ -650,22 +626,18 @@
             }
           }
 
-          // Ensure start and end points are always accessible
-          this.maze[1][1] = 0; // Start point
-          this.maze[this.rows - 2][this.cols - 2] = 0; // End point
+          this.maze[1][1] = 0;
+          this.maze[this.rows - 2][this.cols - 2] = 0;
 
-          // Create a guaranteed path to end if needed
           this.ensurePathToEnd();
         }
 
         ensurePathToEnd() {
-          // Simple path creation from start area to end area
           let x = 1,
             y = 1;
           const endX = this.cols - 2;
           const endY = this.rows - 2;
 
-          // Create horizontal path
           while (x < endX) {
             this.maze[y][x] = 0;
             x += 2;
@@ -673,7 +645,6 @@
             x++;
           }
 
-          // Create vertical path
           while (y < endY) {
             this.maze[y][x - 1] = 0;
             y += 2;
@@ -681,7 +652,6 @@
             y++;
           }
 
-          // Ensure end point connection
           this.maze[endY][endX] = 0;
           if (endX > 1) this.maze[endY][endX - 1] = 0;
           if (endY > 1) this.maze[endY - 1][endX] = 0;
@@ -690,10 +660,10 @@
         getUnvisitedNeighbors(cell) {
           const neighbors = [];
           const directions = [
-            { x: 0, y: -2 }, // Up
-            { x: 2, y: 0 }, // Right
-            { x: 0, y: 2 }, // Down
-            { x: -2, y: 0 }, // Left
+            { x: 0, y: -2 },
+            { x: 2, y: 0 },
+            { x: 0, y: 2 },
+            { x: -2, y: 0 },
           ];
 
           for (const dir of directions) {
@@ -725,8 +695,8 @@
               y = Math.floor(Math.random() * (this.rows - 2)) + 1;
             } while (
               this.maze[y][x] === 1 ||
-              (x === 1 && y === 1) || // Start point
-              (x === this.cols - 2 && y === this.rows - 2) || // End point
+              (x === 1 && y === 1) ||
+              (x === this.cols - 2 && y === this.rows - 2) ||
               this.questionPoints.some((p) => p.x === x && p.y === y)
             );
 
@@ -738,11 +708,9 @@
           }
         }
 
-        // Check if a circular player can move to a position without hitting walls
         canMoveTo(x, y) {
           const radius = this.playerRadius;
 
-          // Check the four corners of the player's bounding box
           const corners = [
             { x: x - radius, y: y - radius },
             { x: x + radius, y: y - radius },
@@ -772,7 +740,6 @@
         }
 
         setupEventListeners() {
-          // Track which keys are currently pressed
           this.keysPressed = {};
 
           document.addEventListener("keydown", (e) => {
@@ -797,7 +764,6 @@
             }
           });
 
-          // Game loop for smooth continuous movement
           const gameLoop = () => {
             if (
               document.getElementById("questionModal").style.display ===
@@ -805,14 +771,13 @@
               document.getElementById("nameModal").style.display === "block"
             ) {
               requestAnimationFrame(gameLoop);
-              return; // Don't move while modal is showing
+              return;
             }
 
             let moved = false;
             let newX = this.player.x;
             let newY = this.player.y;
 
-            // Handle continuous movement
             if (this.keysPressed["ArrowUp"]) {
               newY -= this.moveSpeed;
               moved = true;
@@ -830,16 +795,13 @@
               moved = true;
             }
 
-            // Check collision and update position
             if (moved) {
-              // Check X movement
               if (this.canMoveTo(newX, this.player.y)) {
                 this.player.x = newX;
               } else {
-                newX = this.player.x; // Reset X if collision
+                newX = this.player.x;
               }
 
-              // Check Y movement
               if (this.canMoveTo(this.player.x, newY)) {
                 this.player.y = newY;
               }
@@ -873,7 +835,6 @@
               }
             });
 
-          // Question modal event listeners
           const options = document.querySelectorAll(".option");
           options.forEach((option) => {
             option.addEventListener("click", (e) => {
@@ -887,7 +848,6 @@
               this.closeQuestionModal();
             });
 
-          // Name modal event listeners
           document
             .getElementById("submitNameBtn")
             .addEventListener("click", () => {
@@ -902,11 +862,9 @@
               }
             });
 
-          // Test buttons event listeners
           document
             .getElementById("testQuestionBtn")
             .addEventListener("click", () => {
-              // Use first question point if available, else create a dummy
               let qp = this.questionPoints[0];
               if (!qp) {
                 qp = { questionIndex: 0 };
@@ -954,7 +912,6 @@
           this.currentQuestionIndex = pointIndex;
           const question = questions[questionPoint.questionIndex];
 
-          // Support line breaks in question text
           document.getElementById("questionText").innerHTML = question.question
             .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
             .replace(/\n/g, "<br>");
@@ -977,10 +934,8 @@
           const options = document.querySelectorAll(".option");
           const feedback = document.getElementById("feedback");
 
-          // Disable all options
           options.forEach((option) => (option.disabled = true));
 
-          // Show correct/incorrect styling
           options.forEach((option, index) => {
             if (index === question.correct) {
               option.classList.add("correct");
@@ -989,7 +944,6 @@
             }
           });
 
-          // Show feedback
           if (selectedIndex === question.correct) {
             feedback.textContent = "Correct! Well done!";
             feedback.className = "correct";
@@ -1004,7 +958,6 @@
           feedback.style.display = "block";
           document.getElementById("continueBtn").style.display = "block";
 
-          // Mark question as answered
           this.answeredQuestions.add(this.currentQuestionIndex);
           this.updateScore();
           this.updateGameStats();
@@ -1012,11 +965,10 @@
 
         closeQuestionModal() {
           document.getElementById("questionModal").style.display = "none";
-          this.draw(); // Redraw to remove the question point
+          this.draw();
         }
 
         showNameModal() {
-          // Subtract 1 second per correct answer for display
           const adjustedTime = Math.max(0, this.gameTime - this.score * 1000);
           document.getElementById("finalScore").textContent = this.score;
           document.getElementById("finalTime").textContent =
@@ -1033,7 +985,6 @@
             return;
           }
 
-          // Subtract 1 second per correct answer for leaderboard
           const adjustedTime = Math.max(0, this.gameTime - this.score * 1000);
 
           const scoreData = {
@@ -1054,10 +1005,8 @@
           );
           leaderboard.push(scoreData);
 
-          // Sort by time (ascending, i.e., fastest first)
           leaderboard.sort((a, b) => a.time - b.time);
 
-          // Keep only top 10 scores
           leaderboard = leaderboard.slice(0, 10);
 
           localStorage.setItem(
@@ -1070,7 +1019,7 @@
           const leaderboard = JSON.parse(
             localStorage.getItem("mazeGameLeaderboard") || "[]"
           );
-          // Sort leaderboard by time (ascending)
+
           leaderboard.sort((a, b) => a.time - b.time);
           const leaderboardList = document.getElementById("leaderboardList");
 
@@ -1128,7 +1077,6 @@
         draw() {
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-          // Draw maze
           this.ctx.fillStyle = this.colors.mazeWalls;
           for (let y = 0; y < this.rows; y++) {
             for (let x = 0; x < this.cols; x++) {
@@ -1143,7 +1091,6 @@
             }
           }
 
-          // Draw start point (green square)
           this.ctx.fillStyle = this.colors.startPoint;
           this.ctx.fillRect(
             1 * this.cellSize + 2,
@@ -1152,7 +1099,6 @@
             this.cellSize - 4
           );
 
-          // Draw "START" text
           this.ctx.fillStyle = "#000";
           this.ctx.font = "10px Arial";
           this.ctx.textAlign = "center";
@@ -1162,7 +1108,6 @@
             1.5 * this.cellSize + 3
           );
 
-          // Draw end point (red square)
           const endGridX = this.cols - 2;
           const endGridY = this.rows - 2;
           this.ctx.fillStyle = this.colors.endPoint;
@@ -1173,7 +1118,6 @@
             this.cellSize - 4
           );
 
-          // Draw "END" text
           this.ctx.fillStyle = "#fff";
           this.ctx.font = "10px Arial";
           this.ctx.textAlign = "center";
@@ -1183,7 +1127,6 @@
             (endGridY + 0.5) * this.cellSize + 3
           );
 
-          // Draw question points (only unanswered ones)
           this.ctx.fillStyle = this.colors.questionPoints;
           this.questionPoints.forEach((point, index) => {
             if (!this.answeredQuestions.has(index)) {
@@ -1193,7 +1136,6 @@
             }
           });
 
-          // Draw player (blue dot) using smooth pixel coordinates
           this.ctx.fillStyle = this.colors.player;
           this.ctx.beginPath();
           this.ctx.arc(
@@ -1207,20 +1149,16 @@
         }
       }
 
-      // Start the game when page loads
       window.addEventListener("load", () => {
-        loadLeaderboardStandalone(); // Always load leaderboard on page refresh
+        loadLeaderboardStandalone();
 
         const game = new MazeGame();
 
-        // Always load leaderboard on page refresh
         game.loadLeaderboard();
 
-        // Test button: Show question modal with first question point (or dummy if none)
         document
           .getElementById("testQuestionBtn")
           .addEventListener("click", () => {
-            // Use first question point if available, else create a dummy
             let qp = game.questionPoints[0];
             if (!qp) {
               qp = { questionIndex: 0 };
@@ -1229,7 +1167,6 @@
             game.showQuestion(qp, 0);
           });
 
-        // Test button: Show name modal
         document.getElementById("testNameBtn").addEventListener("click", () => {
           game.showNameModal();
         });
